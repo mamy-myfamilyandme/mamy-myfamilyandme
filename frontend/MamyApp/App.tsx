@@ -1,43 +1,113 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { StatusBar, useColorScheme, View, StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SplashScreen } from './src/screens/SplashScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { UserModeSelectionScreen } from './src/screens/UserModeSelectionScreen';
+import { DashboardScreen } from './src/screens/DashboardScreen';
+import { MedicationScreen } from './src/screens/tabs/MedicationScreen';
+import { VaccinationScreen } from './src/screens/tabs/VaccinationScreen';
+import { HospitalScreen } from './src/screens/tabs/HospitalScreen';
+import { HealthScreen } from './src/screens/tabs/HealthScreen';
+import { CommunityScreen } from './src/screens/tabs/CommunityScreen';
+import { TabNavigator } from './src/components/TabNavigator';
+import type { UserMode } from './src/types/auth';
+import type { TabScreen } from './src/types/navigation';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+type Screen = 'splash' | 'login' | 'userModeSelection' | 'dashboard';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
+  const [selectedUserMode, setSelectedUserMode] = useState<UserMode | null>(null);
+  const [activeTab, setActiveTab] = useState<TabScreen>('home');
+
+  const handleSplashFinish = () => {
+    setCurrentScreen('login');
+  };
+
+  const handleLoginSuccess = () => {
+    setCurrentScreen('userModeSelection');
+  };
+
+  const handleModeSelected = (mode: UserMode) => {
+    setSelectedUserMode(mode);
+    setActiveTab('home'); // Reset to home tab when entering dashboard
+    setCurrentScreen('dashboard');
+  };
+
+  const handleLogout = () => {
+    setSelectedUserMode(null);
+    setActiveTab('home');
+    setCurrentScreen('login');
+  };
+
+  const handleTabChange = (tab: TabScreen) => {
+    setActiveTab(tab);
+  };
+
+  const renderTabScreen = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <DashboardScreen
+            userMode={selectedUserMode || 'caregiver'}
+            onLogout={handleLogout}
+          />
+        );
+      case 'medication':
+        return <MedicationScreen />;
+      case 'vaccination':
+        return <VaccinationScreen />;
+      case 'hospital':
+        return <HospitalScreen />;
+      case 'health':
+        return <HealthScreen />;
+      case 'community':
+        return <CommunityScreen />;
+      default:
+        return (
+          <DashboardScreen
+            userMode={selectedUserMode || 'caregiver'}
+            onLogout={handleLogout}
+          />
+        );
+    }
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'splash':
+        return <SplashScreen onFinish={handleSplashFinish} />;
+      case 'login':
+        return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
+      case 'userModeSelection':
+        return <UserModeSelectionScreen onModeSelected={handleModeSelected} />;
+      case 'dashboard':
+        return (
+          <View style={styles.dashboardContainer}>
+            {renderTabScreen()}
+            <TabNavigator activeTab={activeTab} onTabChange={handleTabChange} />
+          </View>
+        );
+      default:
+        return <SplashScreen onFinish={handleSplashFinish} />;
+    }
+  };
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar
+        barStyle={currentScreen === 'splash' ? 'light-content' : isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={currentScreen === 'splash' ? '#6FCCBD' : undefined}
+      />
+      {renderScreen()}
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
+  dashboardContainer: {
     flex: 1,
   },
 });
