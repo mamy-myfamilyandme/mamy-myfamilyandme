@@ -6,10 +6,8 @@ Children 앱 테스트
     pytest children/tests.py::TestChildModel
 """
 
-import pytest
-from django.utils import timezone
-from datetime import date, timedelta
 
+import pytest
 
 # ============================================
 # 기본 테스트 (Child 모델 만들기 전)

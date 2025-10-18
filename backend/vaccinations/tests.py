@@ -6,9 +6,8 @@ Vaccinations 앱 테스트
     pytest vaccinations/tests.py::TestVaccineModel
 """
 
-import pytest
-from datetime import date
 
+import pytest
 
 # ============================================
 # 기본 테스트 (모델 만들기 전)
