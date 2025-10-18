@@ -6,7 +6,6 @@ Children 앱 테스트
     pytest children/tests.py::TestChildModel
 """
 
-
 import pytest
 
 # ============================================

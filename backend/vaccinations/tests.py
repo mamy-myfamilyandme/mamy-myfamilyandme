@@ -6,7 +6,6 @@ Vaccinations 앱 테스트
     pytest vaccinations/tests.py::TestVaccineModel
 """
 
-
 import pytest
 
 # ============================================
