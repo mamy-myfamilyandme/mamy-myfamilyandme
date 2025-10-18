@@ -17,7 +17,7 @@ def api_client():
 def user(db):
     """
     테스트용 일반 사용자
-    
+
     Usage:
         def test_something(user):
             assert user.email == "testuser@example.com"
@@ -35,7 +35,7 @@ def user(db):
 def authenticated_client(api_client, user):
     """
     인증된 API 클라이언트
-    
+
     Usage:
         def test_protected_endpoint(authenticated_client):
             response = authenticated_client.get('/api/protected/')
@@ -49,7 +49,7 @@ def authenticated_client(api_client, user):
 def user_data():
     """
     사용자 생성용 테스트 데이터
-    
+
     Usage:
         def test_user_creation(user_data):
             user = User.objects.create_user(**user_data)

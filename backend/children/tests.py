@@ -5,6 +5,7 @@ Children 앱 테스트
     pytest children/tests.py
     pytest children/tests.py::TestChildModel
 """
+
 import pytest
 from django.utils import timezone
 from datetime import date, timedelta
@@ -41,7 +42,7 @@ class TestChildrenAppBasics:
 # def child(db, user):
 #     """
 #     테스트용 아이 픽스처
-#     
+#
 #     Child 모델 예시:
 #     class Child(models.Model):
 #         parent = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -50,7 +51,7 @@ class TestChildrenAppBasics:
 #         gender = models.CharField(max_length=1, choices=[('M', '남'), ('F', '여')])
 #     """
 #     from children.models import Child
-#     
+#
 #     return Child.objects.create(
 #         parent=user,
 #         name="홍길동",
@@ -62,31 +63,31 @@ class TestChildrenAppBasics:
 # @pytest.mark.django_db
 # class TestChildModel:
 #     """Child 모델 기능 테스트"""
-# 
+#
 #     def test_create_child(self, user):
 #         """아이 생성 테스트"""
 #         from children.models import Child
-# 
+#
 #         child = Child.objects.create(
 #             parent=user,
 #             name="홍길동",
 #             birth_date=date(2023, 3, 15),
 #             gender="M",
 #         )
-# 
+#
 #         assert child.name == "홍길동"
 #         assert child.parent == user
 #         assert child.gender == "M"
 #         assert isinstance(child.birth_date, date)
-# 
+#
 #     def test_child_string_representation(self, child):
 #         """Child __str__ 메서드 테스트"""
 #         assert "홍길동" in str(child)
-# 
+#
 #     def test_child_age_calculation(self, child):
 #         """
 #         나이 계산 메서드 테스트
-#         
+#
 #         예시 구현:
 #         @property
 #         def age_in_months(self):
@@ -100,17 +101,17 @@ class TestChildrenAppBasics:
 #         # assert isinstance(age, int)
 #         # assert age >= 0
 #         pass
-# 
+#
 #     def test_child_belongs_to_parent(self, user, child):
 #         """아이가 부모에게 올바르게 연결되는지 확인"""
 #         assert child.parent == user
 #         assert child in user.child_set.all()  # 역참조
-# 
+#
 #     def test_child_deletion_when_parent_deleted(self, user, child):
 #         """부모 삭제 시 아이도 삭제되는지 확인 (CASCADE)"""
 #         child_id = child.pk
 #         user.delete()
-# 
+#
 #         from children.models import Child
 #         # CASCADE로 인해 아이도 삭제되어야 함
 #         with pytest.raises(Child.DoesNotExist):
@@ -125,21 +126,21 @@ class TestChildrenAppBasics:
 # @pytest.mark.django_db
 # class TestChildAPI:
 #     """Child CRUD API 테스트"""
-# 
+#
 #     def test_list_children(self, authenticated_client, child):
 #         """아이 목록 조회"""
 #         from django.urls import reverse
-#         
+#
 #         url = reverse("child-list")
 #         response = authenticated_client.get(url)
-# 
+#
 #         assert response.status_code == 200
 #         assert len(response.data) >= 1
-# 
+#
 #     def test_create_child(self, authenticated_client):
 #         """아이 생성 API"""
 #         from django.urls import reverse
-#         
+#
 #         url = reverse("child-list")
 #         response = authenticated_client.post(
 #             url,
@@ -150,42 +151,42 @@ class TestChildrenAppBasics:
 #             },
 #             format="json",
 #         )
-# 
+#
 #         assert response.status_code == 201
 #         assert response.data["name"] == "새아이"
-# 
+#
 #     def test_retrieve_child(self, authenticated_client, child):
 #         """아이 상세 조회"""
 #         from django.urls import reverse
-#         
+#
 #         url = reverse("child-detail", kwargs={"pk": child.pk})
 #         response = authenticated_client.get(url)
-# 
+#
 #         assert response.status_code == 200
 #         assert response.data["name"] == child.name
-# 
+#
 #     def test_update_child(self, authenticated_client, child):
 #         """아이 정보 수정"""
 #         from django.urls import reverse
-#         
+#
 #         url = reverse("child-detail", kwargs={"pk": child.pk})
 #         response = authenticated_client.patch(
 #             url,
 #             {"name": "변경된이름"},
 #             format="json",
 #         )
-# 
+#
 #         assert response.status_code == 200
 #         assert response.data["name"] == "변경된이름"
-# 
+#
 #     def test_delete_child(self, authenticated_client, child):
 #         """아이 삭제"""
 #         from django.urls import reverse
 #         from children.models import Child
-#         
+#
 #         url = reverse("child-detail", kwargs={"pk": child.pk})
 #         response = authenticated_client.delete(url)
-# 
+#
 #         assert response.status_code == 204
 #         assert not Child.objects.filter(pk=child.pk).exists()
 
@@ -202,7 +203,7 @@ class TestChildHelpers:
     def test_calculate_age_in_months(self):
         """
         월령 계산 헬퍼 함수 테스트
-        
+
         예시 구현:
         def calculate_age_in_months(birth_date):
             today = date.today()
@@ -212,7 +213,7 @@ class TestChildHelpers:
         """
         # 함수 구현 후 주석 해제
         # from children.utils import calculate_age_in_months
-        # 
+        #
         # birth_date = date(2023, 1, 1)
         # age = calculate_age_in_months(birth_date)
         # assert age > 0

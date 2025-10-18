@@ -6,6 +6,7 @@ Accounts 앱 테스트
     pytest accounts/tests.py::TestUserModel
     pytest accounts/tests.py::TestUserModel::test_create_user
 """
+
 import pytest
 from django.contrib.auth import get_user_model
 
@@ -91,7 +92,7 @@ class TestUserAPI:
     def test_placeholder_api(self):
         """
         나중에 API 구현하면 작성할 테스트
-        
+
         예시:
         def test_user_registration(self, api_client):
             url = reverse('register')
@@ -118,7 +119,7 @@ class TestAuthenticationHelpers:
     def test_user_count_increases(self, user):
         """사용자 수 증가 확인"""
         initial_count = User.objects.count()
-        
+
         User.objects.create_user(
             username="another",
             email="another@example.com",
