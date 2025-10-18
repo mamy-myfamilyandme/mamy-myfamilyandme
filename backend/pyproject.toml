@@ -19,5 +19,66 @@ dev = [
     "black>=25.1.0",
     "pytest>=8.4.2",
     "pytest-django>=4.11.1",
+    "pytest-cov>=6.0.0",  # 커버리지 측정
     "ruff>=0.13.0",
 ]
+
+# ============================================
+# Pytest 설정
+# ============================================
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",              # 상세 출력
+    "--strict-markers",       # 정의되지 않은 마커 에러
+    "--tb=short",            # 간결한 traceback
+    "--disable-warnings",    # 경고 숨기기
+    "--reuse-db",            # DB 재사용 (속도 향상)
+    "--cov=.",               # 커버리지 측정
+    "--cov-report=term",     # 터미널 출력
+    "--cov-report=html",     # HTML 리포트 생성
+]
+testpaths = [
+    "accounts",
+    "children", 
+    "vaccinations",
+]
+
+# 커버리지 설정
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*",
+    "manage.py",
+    "config/asgi.py",
+    "config/wsgi.py",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+# 커버리지 최소 목표 (처음에는 낮게 설정)
+fail_under = 50
+
+# ============================================
+# Ruff 설정
+# ============================================
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]  # pycodestyle, pyflakes, isort
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["accounts", "children", "vaccinations", "config"]
