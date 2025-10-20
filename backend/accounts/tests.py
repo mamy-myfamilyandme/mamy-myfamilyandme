@@ -22,6 +22,73 @@ User = get_user_model()
 class TestUserModel:
     """User 모델 기본 기능 테스트"""
 
+    # def test_user_default_fields(self):
+    #     """User 모델 기본 필드값 테스트"""
+    #     user = User.objects.create_user(
+    #         username="defaultcheck",
+    #         email="default@example.com",
+    #         password="pass123",
+    #     )
+    #     assert user.is_active is True
+    #     assert user.is_staff is False
+    #     assert user.is_superuser is False
+
+    # def test_create_user_without_username(self):
+    #     """username 없이 사용자 생성 시 오류"""
+    #     with pytest.raises(ValueError):
+    #         User.objects.create_user(
+    #             username="",
+    #             email="nouser@example.com",
+    #             password="password",
+    #     )
+
+    # def test_create_user_without_password(self):
+    #     """비밀번호 없이 사용자 생성"""
+    #     user = User.objects.create_user(
+    #         username="nopass",
+    #         email="nopass@example.com",
+    #         password=None,
+    #     )
+    #     # Django 기본 User는 None도 가능하지만 usable_password가 False
+    #     assert not user.has_usable_password()
+
+    # def test_create_superuser_with_wrong_flags(self):
+    #     """is_superuser=False로 superuser 생성 시 ValueError 발생"""
+    #     with pytest.raises(ValueError):
+    #         User.objects.create_superuser(
+    #             username="wrongadmin",
+    #             email="wrongadmin@example.com",
+    #             password="password",
+    #             is_superuser=False,
+    #         )
+
+    # def test_set_unusable_password(self):
+    #     """비밀번호 사용 불가 설정 테스트"""
+    #     user = User.objects.create_user(
+    #         username="nopassuser",
+    #         email="nopass@example.com",
+    #         password="abc123",
+    #     )
+    #     user.set_unusable_password()
+    #     user.save()
+
+    #     assert not user.has_usable_password()
+    #     assert user.check_password("abc123") is False
+        
+    # def test_user_filter_by_username(self, user):
+    #     """username으로 사용자 검색 테스트"""
+    #     found = User.objects.get(username=user.username)
+    #     assert found == user
+        
+    # def test_user_str_with_email_only(self):
+    #     """username이 없는 경우에도 str에 email이 포함되는지 테스트"""
+    #     user = User.objects.create_user(
+    #         username="",
+    #         email="onlyemail@example.com",
+    #         password="pass",
+    #     )
+    #     assert "onlyemail@example.com" in str(user)
+
     def test_create_user(self):
         """일반 사용자 생성 테스트"""
         user = User.objects.create_user(

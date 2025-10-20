@@ -1,4 +1,3 @@
-# backend/config/settings.py
 from datetime import timedelta
 from pathlib import Path
 
@@ -15,8 +14,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
     "corsheaders",
+    "rest_framework",
+    "rest_framework.authtoken",
     "drf_spectacular",
     "accounts",
     "children",
@@ -101,3 +101,5 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = 'accounts.User'
