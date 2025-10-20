@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
   Text,
   View,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Logo } from '../components/Logo';
+import { VaccinationCarousel } from '../components/VaccinationCarousel';
 import { colors } from '../theme/colors';
 import type { UserMode } from '../types/auth';
+import type { VaccinationSchedule } from '../types/vaccination';
+import { getVaccinationSchedules, getTokens } from '../services/api';
 
 interface Props {
   userMode: UserMode;
@@ -23,6 +27,65 @@ const MODE_LABELS: Record<UserMode, string> = {
 };
 
 export function DashboardScreen({ userMode, onLogout }: Props) {
+  const [vaccinations, setVaccinations] = useState<VaccinationSchedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadVaccinationData();
+  }, []);
+
+  const loadVaccinationData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // 토큰 가져오기
+      const { accessToken } = await getTokens();
+      if (!accessToken) {
+        console.log('토큰이 없습니다. 로그인이 필요합니다.');
+        setError('로그인 후 예방접종 정보를 확인할 수 있습니다');
+        setLoading(false);
+        return;
+      }
+
+      console.log('토큰으로 데이터 로드 중...');
+
+      // TODO: 실제로는 현재 사용자의 자녀 ID를 가져와야 함
+      // 지금은 테스트용으로 childId = 2 사용 (test@example.com의 자녀)
+      const childId = 2;
+
+      const response = await getVaccinationSchedules(childId, accessToken);
+
+      console.log('API 응답:', response);
+
+      if (response.error) {
+        console.error('API 에러:', response.error);
+        setError(response.error);
+      } else if (response.data) {
+        console.log(`${response.data.length}개의 예방접종 데이터를 로드했습니다`);
+        setVaccinations(response.data);
+      }
+    } catch (err) {
+      console.error('예방접종 데이터 로드 오류:', err);
+      setError('데이터를 불러오는데 실패했습니다');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVaccinationPress = (vaccination: VaccinationSchedule) => {
+    console.log('접종 항목 선택:', vaccination);
+    // TODO: 상세 화면으로 이동 또는 모달 표시
+  };
+
+  const completedCount = vaccinations.filter(v => v.is_completed).length;
+  const totalCount = vaccinations.length;
+  const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const upcomingVaccinations = vaccinations
+    .filter(v => !v.is_completed && v.is_upcoming)
+    .slice(0, 3);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -48,34 +111,74 @@ export function DashboardScreen({ userMode, onLogout }: Props) {
 
           {/* 보호자 모드일 때만 접종 카드 표시 */}
           {userMode === 'caregiver' && (
-            <View style={styles.vaccinationCard}>
-              <View style={styles.vaccinationHeader}>
-                <Text style={styles.vaccinationTitle}>🧒 우리 아이 접종 현황</Text>
-                <View style={styles.completionBadge}>
-                  <Text style={styles.completionText}>75%</Text>
+            <>
+              {loading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={colors.primary.main} />
+                  <Text style={styles.loadingText}>예방접종 데이터 로딩중...</Text>
                 </View>
-              </View>
-
-              {/* 진행바 */}
-              <View style={styles.progressContainer}>
-                <View style={styles.progressBar}>
-                  <View style={[styles.progressFill, { width: '75%' }]} />
+              ) : error ? (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{error}</Text>
+                  <Pressable style={styles.retryButton} onPress={loadVaccinationData}>
+                    <Text style={styles.retryButtonText}>다시 시도</Text>
+                  </Pressable>
                 </View>
-                <Text style={styles.progressLabel}>15/20 완료</Text>
-              </View>
+              ) : (
+                <>
+                  {/* 접종 통계 카드 */}
+                  <View style={styles.vaccinationCard}>
+                    <View style={styles.vaccinationHeader}>
+                      <Text style={styles.vaccinationTitle}>🧒 우리 아이 접종 현황</Text>
+                      <View style={styles.completionBadge}>
+                        <Text style={styles.completionText}>{completionRate}%</Text>
+                      </View>
+                    </View>
 
-              {/* 다가오는 접종 */}
-              <View style={styles.upcomingVaccination}>
-                <Text style={styles.upcomingLabel}>다가오는 접종</Text>
-                <Text style={styles.upcomingName}>MMR 2차</Text>
-                <Text style={styles.upcomingDate}>2025년 10월 20일</Text>
-              </View>
+                    {/* 진행바 */}
+                    <View style={styles.progressContainer}>
+                      <View style={styles.progressBar}>
+                        <View style={[styles.progressFill, { width: `${completionRate}%` }]} />
+                      </View>
+                      <Text style={styles.progressLabel}>
+                        {completedCount}/{totalCount} 완료
+                      </Text>
+                    </View>
 
-              {/* 빠른 접종 기록 버튼 */}
-              <Pressable style={styles.quickRecordButton}>
-                <Text style={styles.quickRecordText}>+ 접종 기록하기</Text>
-              </Pressable>
-            </View>
+                    {/* 다가오는 접종 */}
+                    {upcomingVaccinations.length > 0 && (
+                      <View style={styles.upcomingVaccination}>
+                        <Text style={styles.upcomingLabel}>다가오는 접종</Text>
+                        <Text style={styles.upcomingName}>
+                          {upcomingVaccinations[0].vaccine_name} {upcomingVaccinations[0].dose_number}차
+                        </Text>
+                        <Text style={styles.upcomingDate}>
+                          {new Date(upcomingVaccinations[0].vaccination_date).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          })}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* 빠른 접종 기록 버튼 */}
+                    <Pressable style={styles.quickRecordButton} onPress={loadVaccinationData}>
+                      <Text style={styles.quickRecordText}>🔄 새로고침</Text>
+                    </Pressable>
+                  </View>
+
+                  {/* 예방접종 회전형 리스트 */}
+                  <View style={styles.carouselSection}>
+                    <Text style={styles.carouselTitle}>📋 전체 예방접종 일정</Text>
+                    <VaccinationCarousel
+                      vaccinations={vaccinations}
+                      onItemPress={handleVaccinationPress}
+                    />
+                  </View>
+                </>
+              )}
+            </>
           )}
 
           <View style={styles.card}>
@@ -278,5 +381,55 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: colors.text.inverse,
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background.secondary,
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: colors.text.secondary,
+  },
+  errorContainer: {
+    padding: 24,
+    alignItems: 'center',
+    backgroundColor: '#FFF5F5',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.accent.main,
+    marginBottom: 16,
+  },
+  errorText: {
+    fontSize: 14,
+    color: colors.accent.main,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  retryButton: {
+    backgroundColor: colors.accent.main,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.inverse,
+  },
+  carouselSection: {
+    marginTop: 8,
+    marginHorizontal: -24,
+  },
+  carouselTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text.primary,
+    paddingHorizontal: 24,
+    marginBottom: 12,
   },
 });

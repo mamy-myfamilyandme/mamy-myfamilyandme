@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,6 +17,7 @@ import { Divider } from '../components/Divider';
 import { SocialLoginButton } from '../components/SocialLoginButton';
 import { colors } from '../theme/colors';
 import type { Credentials, SocialProvider } from '../types/auth';
+import * as api from '../services/api';
 
 const SOCIAL_PROVIDERS: SocialProvider[] = [
   { id: 'kakao', label: '카카오', icon: 'K' },
@@ -25,26 +28,49 @@ const SOCIAL_PROVIDERS: SocialProvider[] = [
 
 interface Props {
   onLoginSuccess: () => void;
+  onGoToSignup: () => void;
 }
 
-export function LoginScreen({ onLoginSuccess }: Props) {
+export function LoginScreen({ onLoginSuccess, onGoToSignup }: Props) {
   const [credentials, setCredentials] = useState<Credentials>({
     email: '',
     password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCredentialChange = (key: keyof Credentials, value: string) => {
     setCredentials(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = () => {
-    // 실제로는 여기서 서버에 로그인 요청을 보냅니다
-    if (credentials.email && credentials.password) {
-      Alert.alert('로그인 성공', '사용자 모드를 선택해주세요.');
-      onLoginSuccess();
-    } else {
-      Alert.alert('로그인 실패', '이메일과 비밀번호를 입력해주세요.');
+  const handleSubmit = async () => {
+    if (!credentials.email || !credentials.password) {
+      Alert.alert('입력 오류', '이메일과 비밀번호를 입력해주세요.');
+      return;
     }
+
+    setIsLoading(true);
+    const response = await api.login(credentials.email, credentials.password);
+    setIsLoading(false);
+
+    if (response.error) {
+      Alert.alert('로그인 실패', response.error);
+      return;
+    }
+
+    // 토큰 저장
+    if (response.data?.tokens) {
+      await api.saveTokens(
+        response.data.tokens.access,
+        response.data.tokens.refresh
+      );
+    }
+
+    Alert.alert('로그인 성공', response.data?.message || '로그인에 성공했습니다.', [
+      {
+        text: '확인',
+        onPress: onLoginSuccess,
+      },
+    ]);
   };
 
   const handleSocialAuth = async (providerId: SocialProvider['id']) => {
@@ -108,9 +134,21 @@ export function LoginScreen({ onLoginSuccess }: Props) {
               onChangeText={value => handleCredentialChange('password', value)}
               style={styles.input}
             />
-            <Text style={styles.primaryButton} onPress={handleSubmit}>
-              로그인
-            </Text>
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                pressed && styles.primaryButtonPressed,
+                isLoading && styles.primaryButtonDisabled,
+              ]}
+              onPress={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={colors.text.inverse} />
+              ) : (
+                <Text style={styles.primaryButtonText}>로그인</Text>
+              )}
+            </Pressable>
           </View>
 
           <Divider text="또는" />
@@ -126,6 +164,12 @@ export function LoginScreen({ onLoginSuccess }: Props) {
               ))}
             </View>
           </View>
+
+          <Pressable onPress={onGoToSignup}>
+            <Text style={styles.link}>
+              계정이 없으신가요? 회원가입
+            </Text>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -186,16 +230,32 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 10,
     backgroundColor: colors.primary.main,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonPressed: {
+    opacity: 0.8,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonText: {
     color: colors.text.inverse,
     fontSize: 17,
     fontWeight: '600',
-    textAlign: 'center',
-    paddingVertical: 14,
   },
   socialRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 4,
+  },
+  link: {
+    textAlign: 'center',
+    color: colors.primary.main,
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 8,
   },
 });

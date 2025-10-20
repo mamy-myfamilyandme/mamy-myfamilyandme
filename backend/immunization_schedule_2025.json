@@ -1,0 +1,423 @@
+{
+  "metadata": {
+    "version": "2025",
+    "source": "질병관리청",
+    "title": "표준예방접종일정표(2025)",
+    "description": "어린이 예방접종 일정 데이터 - 출생일 기준 자동 계산용"
+  },
+  "vaccinations": [
+    {
+      "id": 1,
+      "vaccine_name": "BCG(피내용)",
+      "disease": "결핵",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 0,
+          "age_description": "생후 4주 이내",
+          "max_age_in_weeks": 4,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "vaccine_name": "B형간염",
+      "disease": "B형간염",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 0,
+          "age_description": "출생 직후(24시간 이내)",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 1,
+          "age_description": "생후 1개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "vaccine_name": "DTaP",
+      "disease": "디프테리아/파상풍/백일해",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 4,
+          "age_in_months": 15,
+          "age_description": "생후 15~18개월",
+          "age_range_end": 18,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 5,
+          "age_in_months": 48,
+          "age_description": "만 4~6세",
+          "age_range_end": 72,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "vaccine_name": "Td/Tdap",
+      "disease": "파상풍/디프테리아/백일해",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 6,
+          "age_in_months": 132,
+          "age_description": "만 11~12세",
+          "age_range_end": 144,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "vaccine_name": "IPV(폴리오)",
+      "disease": "폴리오",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 4,
+          "age_in_months": 48,
+          "age_description": "만 4~6세",
+          "age_range_end": 72,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "vaccine_name": "MMR",
+      "disease": "홍역/유행성이하선염/풍진",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 12,
+          "age_description": "생후 12~15개월",
+          "age_range_end": 15,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 48,
+          "age_description": "만 4~6세",
+          "age_range_end": 72,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "vaccine_name": "수두",
+      "disease": "수두",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 12,
+          "age_description": "생후 12~15개월",
+          "age_range_end": 15,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "vaccine_name": "일본뇌염(불활성화 백신)",
+      "disease": "일본뇌염",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 12,
+          "age_description": "생후 12~23개월",
+          "age_range_end": 23,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 13,
+          "age_description": "1차 접종 후 1개월",
+          "relative_to_previous": true,
+          "interval_months": 1,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 24,
+          "age_description": "2차 접종 후 11개월",
+          "relative_to_previous": true,
+          "interval_months": 11,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 4,
+          "age_in_months": 72,
+          "age_description": "만 6세",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 5,
+          "age_in_months": 144,
+          "age_description": "만 12세",
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "vaccine_name": "일본뇌염(약독화 생백신)",
+      "disease": "일본뇌염",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 12,
+          "age_description": "생후 12~23개월",
+          "age_range_end": 23,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 24,
+          "age_description": "1차 접종 후 12개월",
+          "relative_to_previous": true,
+          "interval_months": 12,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "vaccine_name": "Hib",
+      "disease": "b형헤모필루스인플루엔자",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 4,
+          "age_in_months": 12,
+          "age_description": "생후 12~15개월",
+          "age_range_end": 15,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "vaccine_name": "폐렴구균",
+      "disease": "폐렴구균",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 4,
+          "age_in_months": 12,
+          "age_description": "생후 12~15개월",
+          "age_range_end": 15,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "vaccine_name": "A형간염",
+      "disease": "A형간염",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 12,
+          "age_description": "생후 12~23개월",
+          "age_range_end": 23,
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 18,
+          "age_description": "1차 접종 후 6개월",
+          "relative_to_previous": true,
+          "interval_months": 6,
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "vaccine_name": "HPV(인유두종바이러스)",
+      "disease": "인유두종바이러스 감염증",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 132,
+          "age_description": "만 11~12세(여성)",
+          "age_range_end": 144,
+          "gender": "female",
+          "is_mandatory": true
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 138,
+          "age_description": "1차 접종 후 6개월",
+          "relative_to_previous": true,
+          "interval_months": 6,
+          "gender": "female",
+          "is_mandatory": true
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "vaccine_name": "인플루엔자",
+      "disease": "인플루엔자",
+      "vaccine_type": "국가필수",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 6,
+          "age_description": "생후 6개월~만 13세",
+          "age_range_end": 156,
+          "is_mandatory": true,
+          "is_annual": true,
+          "notes": "매년 접종"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "vaccine_name": "로타바이러스(5가)",
+      "disease": "로타바이러스 감염증",
+      "vaccine_type": "기타",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": false
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": false
+        },
+        {
+          "dose_number": 3,
+          "age_in_months": 6,
+          "age_description": "생후 6개월",
+          "is_mandatory": false
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "vaccine_name": "로타바이러스(1가)",
+      "disease": "로타바이러스 감염증",
+      "vaccine_type": "기타",
+      "schedules": [
+        {
+          "dose_number": 1,
+          "age_in_months": 2,
+          "age_description": "생후 2개월",
+          "is_mandatory": false
+        },
+        {
+          "dose_number": 2,
+          "age_in_months": 4,
+          "age_description": "생후 4개월",
+          "is_mandatory": false
+        }
+      ]
+    }
+  ],
+  "notification_settings": {
+    "default_advance_days": 30,
+    "description": "접종일 1달 전 알림 기본 설정"
+  }
+}
