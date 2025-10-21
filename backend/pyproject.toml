@@ -19,8 +19,9 @@ dev = [
     "black>=25.1.0",
     "pytest>=8.4.2",
     "pytest-django>=4.11.1",
-    "pytest-cov>=6.0.0",  # 커버리지 측정
+    "pytest-cov>=6.0.0", # 커버리지 측정
     "ruff>=0.13.0",
+    "pre-commit>=4.3.0",
 ]
 
 # ============================================
@@ -43,7 +44,7 @@ addopts = [
 ]
 testpaths = [
     "accounts",
-    "children", 
+    "children",
     "vaccinations",
 ]
 

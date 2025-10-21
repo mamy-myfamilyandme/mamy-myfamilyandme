@@ -3,7 +3,8 @@
 """
 
 from rest_framework import serializers
-from vaccinations.models import VaccinationSchedule, VaccinationNotification
+
+from vaccinations.models import VaccinationNotification, VaccinationSchedule
 
 
 class VaccinationScheduleSerializer(serializers.ModelSerializer):

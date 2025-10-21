@@ -1,5 +1,6 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
 from children.models import Child
 
 User = get_user_model()
@@ -45,7 +46,9 @@ class SignupSerializer(serializers.Serializer):
     def validate(self, data):
         """비밀번호 일치 검증"""
         if data["password"] != data["confirm_password"]:
-            raise serializers.ValidationError({"password": "비밀번호가 일치하지 않습니다."})
+            raise serializers.ValidationError(
+                {"password": "비밀번호가 일치하지 않습니다."}
+            )
 
         # 보호자 모드인 경우 아이 정보 필수
         if data["user_mode"] == "caregiver" and not data.get("child_info"):

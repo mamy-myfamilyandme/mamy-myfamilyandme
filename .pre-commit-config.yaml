@@ -1,0 +1,183 @@
+# .pre-commit-config.yaml
+# Backend(Python/Django) + Frontend(React Native/TypeScript) 통합 설정
+
+# =============================================================================
+# 전역 설정
+# =============================================================================
+
+# 제외할 파일/디렉토리 패턴
+exclude: |
+  (?x)^(
+    backend/migrations/.*|
+    backend/\.venv/.*|
+    backend/htmlcov/.*|
+    backend/\.pytest_cache/.*|
+    backend/db\.sqlite3|
+    frontend/MamyApp/node_modules/.*|
+    frontend/MamyApp/ios/Pods/.*|
+    frontend/MamyApp/ios/build/.*|
+    frontend/MamyApp/android/\.gradle/.*|
+    frontend/MamyApp/android/build/.*|
+    frontend/MamyApp/\.expo/.*|
+    .*\.pyc|
+    .*\.log|
+    \.git/.*
+  )$
+
+# =============================================================================
+# Hooks (실행 순서대로 정의)
+# =============================================================================
+
+repos:
+  # ---------------------------------------------------------------------------
+  # 1. Backend - Python/Django
+  # ---------------------------------------------------------------------------
+  
+  # Ruff - Python 린팅 및 포맷팅
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.0
+    hooks:
+      # 린팅 (import 정렬, 코드 스타일 체크)
+      - id: ruff
+        name: "🐍 Backend: Ruff 린팅"
+        args: [--fix]  # 자동 수정 가능한 것은 수정
+        files: ^backend/.*\.py$
+        exclude: ^backend/.*/migrations/.*\.py$
+      
+      # 포맷팅 (Black 스타일)
+      - id: ruff-format
+        name: "🎨 Backend: Ruff 포맷팅"
+        files: ^backend/.*\.py$
+        exclude: ^backend/.*/migrations/.*\.py$
+
+  # Django 체크
+  # - repo: local
+  #   hooks:
+  #     # Django system check
+  #     - id: django-check
+  #       name: "🏗️ Backend: Django Check"
+  #       entry: bash -c 'cd backend && uv run python manage.py check --deploy'
+  #       language: system
+  #       pass_filenames: false
+  #       files: ^backend/
+      
+  #     # Migration 체크 (미적용 마이그레이션 감지)
+  #     - id: django-migrations
+  #       name: "🔄 Backend: Migration Check"
+  #       entry: bash -c 'cd backend && uv run python manage.py makemigrations --check --dry-run'
+  #       language: system
+  #       pass_filenames: false
+  #       files: ^backend/.*\.(py|json)$
+
+  # ---------------------------------------------------------------------------
+  # 2. Frontend - React Native/TypeScript
+  # ---------------------------------------------------------------------------
+  
+  # ESLint - JavaScript/TypeScript 린팅
+  - repo: local
+    hooks:
+      - id: eslint-frontend
+        name: "⚛️ Frontend: ESLint"
+        entry: bash -c 'cd frontend/MamyApp && npx eslint --fix'
+        language: system
+        files: ^frontend/MamyApp/.*\.(js|jsx|ts|tsx)$
+        exclude: ^frontend/MamyApp/(node_modules|ios/Pods|android/\.gradle)/
+        pass_filenames: false
+
+  # TypeScript 타입 체크
+  # - repo: local
+  #   hooks:
+  #     - id: typescript-check
+  #       name: "📘 Frontend: TypeScript"
+  #       entry: bash -c 'cd frontend/MamyApp && npx tsc --noEmit'
+  #       language: system
+  #       files: ^frontend/MamyApp/.*\.(ts|tsx)$
+  #       pass_filenames: false
+
+  # Prettier - 코드 포맷팅 (선택 사항)
+  # - repo: local
+  #   hooks:
+  #     - id: prettier-frontend
+  #       name: "💅 Frontend: Prettier"
+  #       entry: bash -c 'cd frontend/MamyApp && npx prettier --write'
+  #       language: system
+  #       files: ^frontend/MamyApp/.*\.(js|jsx|ts|tsx|json|css|md)$
+  #       pass_filenames: false
+
+  # ---------------------------------------------------------------------------
+  # 3. 공통 - 파일 품질 체크
+  # ---------------------------------------------------------------------------
+  
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # 파일 끝 줄바꿈 추가
+      - id: end-of-file-fixer
+        name: "📝 파일 끝 줄바꿈"
+        exclude: \.(png|jpg|jpeg|gif|svg|ico|ttf|woff|woff2)$
+      
+      # 파일 끝 공백 제거
+      - id: trailing-whitespace
+        name: "✂️ 파일 끝 공백 제거"
+        args: [--markdown-linebreak-ext=md]
+        exclude: \.(png|jpg|jpeg|gif|svg|ico)$
+      
+      # YAML 문법 체크
+      - id: check-yaml
+        name: "📋 YAML 문법 체크"
+        args: [--unsafe]  # Django 템플릿 태그 허용
+      
+      # JSON 문법 체크
+      - id: check-json
+        name: "🔧 JSON 문법 체크"
+      
+      # 대용량 파일 커밋 방지
+      - id: check-added-large-files
+        name: "📦 대용량 파일 체크"
+        args: [--maxkb=1000]  # 1MB 제한
+      
+      # Merge conflict 마커 체크
+      - id: check-merge-conflict
+        name: "⚠️ Merge Conflict 체크"
+      
+      # Python AST 문법 체크
+      - id: check-ast
+        name: "🐍 Python 문법 체크"
+        files: ^backend/.*\.py$
+
+  # ---------------------------------------------------------------------------
+  # 4. 보안 체크 (선택 사항 - 추후 활성화)
+  # ---------------------------------------------------------------------------
+  
+  # # Bandit - Python 보안 취약점 체크
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: 1.7.10
+  #   hooks:
+  #     - id: bandit
+  #       name: "🔒 Backend: 보안 체크"
+  #       args: [-ll, -i, B308,B703]
+  #       files: ^backend/.*\.py$
+  
+  # # Detect Secrets - 시크릿 키 노출 방지
+  # - repo: https://github.com/Yelp/detect-secrets
+  #   rev: v1.5.0
+  #   hooks:
+  #     - id: detect-secrets
+  #       name: "🔐 시크릿 키 체크"
+  #       args: [--baseline, .secrets.baseline]
+
+# =============================================================================
+# CI 설정 (선택 사항)
+# =============================================================================
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+    
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
