@@ -5,10 +5,11 @@
 접종 1달 전 알림을 생성하는 로직을 제공합니다.
 """
 
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-from typing import List, Dict, Optional
 import json
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional
+
+from dateutil.relativedelta import relativedelta
 
 
 class ImmunizationScheduleCalculator:
@@ -19,16 +20,18 @@ class ImmunizationScheduleCalculator:
         Args:
             schedule_json_path: 예방접종 일정 JSON 파일 경로
         """
-        with open(schedule_json_path, 'r', encoding='utf-8') as f:
+        with open(schedule_json_path, "r", encoding="utf-8") as f:
             self.schedule_data = json.load(f)
 
-        self.notification_advance_days = self.schedule_data['notification_settings']['default_advance_days']
+        self.notification_advance_days = self.schedule_data["notification_settings"][
+            "default_advance_days"
+        ]
 
     def calculate_vaccination_date(
         self,
         birth_date: datetime,
         age_in_months: int,
-        max_age_in_weeks: Optional[int] = None
+        max_age_in_weeks: Optional[int] = None,
     ) -> datetime:
         """
         출생일 기준으로 예방접종 예정일 계산
@@ -64,7 +67,7 @@ class ImmunizationScheduleCalculator:
         self,
         birth_date: datetime,
         gender: Optional[str] = None,
-        include_optional: bool = False
+        include_optional: bool = False,
     ) -> List[Dict]:
         """
         아이의 전체 예방접종 일정 생성
@@ -80,22 +83,20 @@ class ImmunizationScheduleCalculator:
         schedule = []
         today = datetime.now()
 
-        for vaccine in self.schedule_data['vaccinations']:
+        for vaccine in self.schedule_data["vaccinations"]:
             # 국가필수만 또는 모든 접종
-            if vaccine['vaccine_type'] == '기타' and not include_optional:
+            if vaccine["vaccine_type"] == "기타" and not include_optional:
                 continue
 
-            for dose in vaccine['schedules']:
+            for dose in vaccine["schedules"]:
                 # 성별 필터링 (HPV 등)
-                if 'gender' in dose and gender and dose['gender'] != gender:
+                if "gender" in dose and gender and dose["gender"] != gender:
                     continue
 
                 # 접종일 계산
-                max_weeks = dose.get('max_age_in_weeks')
+                max_weeks = dose.get("max_age_in_weeks")
                 vaccination_date = self.calculate_vaccination_date(
-                    birth_date,
-                    dose['age_in_months'],
-                    max_weeks
+                    birth_date, dose["age_in_months"], max_weeks
                 )
 
                 # 과거 접종은 제외하고 미래 일정만 포함 (옵션)
@@ -106,32 +107,29 @@ class ImmunizationScheduleCalculator:
                 notification_date = self.calculate_notification_date(vaccination_date)
 
                 schedule_item = {
-                    'vaccine_id': vaccine['id'],
-                    'vaccine_name': vaccine['vaccine_name'],
-                    'disease': vaccine['disease'],
-                    'dose_number': dose['dose_number'],
-                    'age_description': dose['age_description'],
-                    'vaccination_date': vaccination_date.strftime('%Y-%m-%d'),
-                    'notification_date': notification_date.strftime('%Y-%m-%d'),
-                    'is_mandatory': dose.get('is_mandatory', False),
-                    'is_annual': dose.get('is_annual', False),
-                    'notes': dose.get('notes', ''),
-                    'age_range_end': dose.get('age_range_end'),
-                    'is_overdue': vaccination_date < today
+                    "vaccine_id": vaccine["id"],
+                    "vaccine_name": vaccine["vaccine_name"],
+                    "disease": vaccine["disease"],
+                    "dose_number": dose["dose_number"],
+                    "age_description": dose["age_description"],
+                    "vaccination_date": vaccination_date.strftime("%Y-%m-%d"),
+                    "notification_date": notification_date.strftime("%Y-%m-%d"),
+                    "is_mandatory": dose.get("is_mandatory", False),
+                    "is_annual": dose.get("is_annual", False),
+                    "notes": dose.get("notes", ""),
+                    "age_range_end": dose.get("age_range_end"),
+                    "is_overdue": vaccination_date < today,
                 }
 
                 schedule.append(schedule_item)
 
         # 접종일 기준 정렬
-        schedule.sort(key=lambda x: x['vaccination_date'])
+        schedule.sort(key=lambda x: x["vaccination_date"])
 
         return schedule
 
     def get_upcoming_vaccinations(
-        self,
-        birth_date: datetime,
-        gender: Optional[str] = None,
-        days_ahead: int = 60
+        self, birth_date: datetime, gender: Optional[str] = None, days_ahead: int = 60
     ) -> List[Dict]:
         """
         다가오는 예방접종 일정 조회 (앞으로 N일 이내)
@@ -149,16 +147,17 @@ class ImmunizationScheduleCalculator:
         cutoff_date = today + timedelta(days=days_ahead)
 
         upcoming = [
-            item for item in all_schedule
-            if today <= datetime.strptime(item['vaccination_date'], '%Y-%m-%d') <= cutoff_date
+            item
+            for item in all_schedule
+            if today
+            <= datetime.strptime(item["vaccination_date"], "%Y-%m-%d")
+            <= cutoff_date
         ]
 
         return upcoming
 
     def get_overdue_vaccinations(
-        self,
-        birth_date: datetime,
-        gender: Optional[str] = None
+        self, birth_date: datetime, gender: Optional[str] = None
     ) -> List[Dict]:
         """
         지연된 예방접종 조회
@@ -173,8 +172,7 @@ class ImmunizationScheduleCalculator:
         all_schedule = self.get_child_schedule(birth_date, gender)
 
         overdue = [
-            item for item in all_schedule
-            if item['is_overdue'] and item['is_mandatory']
+            item for item in all_schedule if item["is_overdue"] and item["is_mandatory"]
         ]
 
         return overdue
@@ -203,8 +201,8 @@ if __name__ == "__main__":
         print(f"   접종 권장시기: {item['age_description']}")
         print(f"   접종 예정일: {item['vaccination_date']}")
         print(f"   알림 날짜: {item['notification_date']} (1달 전)")
-        if item['is_overdue']:
-            print(f"   ⚠️  접종 지연")
+        if item["is_overdue"]:
+            print("   ⚠️  접종 지연")
 
     # 2. 다가오는 접종 (앞으로 60일 이내)
     print("\n" + "=" * 80)
@@ -242,7 +240,9 @@ if __name__ == "__main__":
     print("=" * 80)
 
     # BCG: 생후 4주 이내
-    bcg_date = calculator.calculate_vaccination_date(child_birth_date, 0, max_age_in_weeks=4)
+    bcg_date = calculator.calculate_vaccination_date(
+        child_birth_date, 0, max_age_in_weeks=4
+    )
     print(f"\nBCG 접종일: {bcg_date.strftime('%Y-%m-%d')} (생후 4주 이내)")
 
     # B형간염 1차: 출생 직후

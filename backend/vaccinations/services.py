@@ -3,11 +3,11 @@
 """
 
 from datetime import datetime
-from children.models import Child
-from vaccinations.models import VaccinationSchedule, VaccinationNotification
-from immunization_calculator import ImmunizationScheduleCalculator
-import os
 from pathlib import Path
+
+from children.models import Child
+from immunization_calculator import ImmunizationScheduleCalculator
+from vaccinations.models import VaccinationNotification, VaccinationSchedule
 
 
 def create_vaccination_schedules(child: Child) -> int:
@@ -98,5 +98,8 @@ def get_overdue_schedules(child: Child):
     from datetime import date
 
     return VaccinationSchedule.objects.filter(
-        child=child, is_completed=False, is_mandatory=True, vaccination_date__lt=date.today()
+        child=child,
+        is_completed=False,
+        is_mandatory=True,
+        vaccination_date__lt=date.today(),
     ).select_related("child")
