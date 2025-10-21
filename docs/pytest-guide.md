@@ -174,21 +174,21 @@ User = get_user_model()
 @pytest.mark.django_db  # Django DB 사용
 class TestUserModel:
     """User 모델 테스트"""
-    
+
     def test_create_user(self):
         """사용자 생성 테스트"""
         # Given (준비)
         username = "testuser"
         email = "test@example.com"
         password = "testpass123"
-        
+
         # When (실행)
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password
         )
-        
+
         # Then (검증)
         assert user.username == username
         assert user.email == email
@@ -201,21 +201,21 @@ class TestUserModel:
 @pytest.mark.django_db
 class TestUserAPI:
     """User API 테스트"""
-    
+
     def test_user_list(self, authenticated_client):
         """사용자 목록 조회"""
         from django.urls import reverse
-        
+
         url = reverse('user-list')
         response = authenticated_client.get(url)
-        
+
         assert response.status_code == 200
         assert isinstance(response.data, list)
-    
+
     def test_user_create(self, api_client):
         """사용자 생성"""
         from django.urls import reverse
-        
+
         url = reverse('user-list')
         data = {
             'username': 'newuser',
@@ -223,7 +223,7 @@ class TestUserAPI:
             'password': 'newpass123',
         }
         response = api_client.post(url, data, format='json')
-        
+
         assert response.status_code == 201
         assert response.data['email'] == data['email']
 ```
@@ -261,7 +261,7 @@ def test_user_creation(username, email, expected):
         result = user.pk is not None
     except:
         result = False
-    
+
     assert result == expected
 ```
 
@@ -455,10 +455,10 @@ uv run pytest -m "not slow"
 ```python
 def test_debug():
     user = User.objects.create_user(...)
-    
+
     # 여기서 멈춤
     import pdb; pdb.set_trace()
-    
+
     assert user.is_active
 ```
 

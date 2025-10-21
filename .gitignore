@@ -1,62 +1,105 @@
-# 루트 .gitignore
+# Django
+*.sqlite3
+*.db
+db.sqlite3
+*.sqlite
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual Environment
 env/
 venv/
 .venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_collected/
+
+# Secret keys
 .env
-*.db
-*.sqlite3
-
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-yarn.lock
-
-# React Native
-.expo/
-dist/
-web-build/
-.metro-cache/
-.metro-health-check*
-
-# Android
-android/app/build/
-android/.gradle/
-android/build/
-*.apk
-*.aab
-
-# iOS  
-ios/build/
-ios/Pods/
-ios/.xcode.env.local
-*.ipa
+.env.*
+*.env
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Migrations (선택적 - 초기 개발 단계에서는 추가하지 않음)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# macOS
 .DS_Store
+
+# Windows
 Thumbs.db
+ehthumbs.db
 
-# Logs
-logs/
-*.log
+# pyenv
+.python-version
 
-# 환경변수 (중요한 키가 들어있을 수 있음)
-.env.local
-.env.production
+# Celery
+celerybeat-schedule
+celerybeat.pid
 
-# 기타 빌드 결과물
+# SageMath parsed files
+*.sage.py
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Distribution / packaging
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
