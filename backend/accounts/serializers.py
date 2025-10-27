@@ -1,49 +1,68 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate, password_validation
 
 User = get_user_model()
 
+
 class UserCreationSerializer(serializers.ModelSerializer):
-    # 비밀번호 확인 필드를 모델에는 없지만, 검증을 위해 Serializer에 추가합니다.
-    # write_only=True: 이 필드는 응답(JSON)에 포함되지 않고 쓰기(입력)에만 사용됩니다.
-    password_check = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-    
+    password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True, label="Password confirmation")
+
     class Meta:
         model = User
-        # 앱에서 받아야 할 필드 목록을 정의합니다.
-        fields = ('username', 'password', 'password_check', 'email', 'first_name', 'last_name') 
-        # password 필드가 JSON 응답에 포함되는 것을 막습니다. (보안)
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        fields = ('id', 'username', 'password', 'password2', 'email', 'first_name', 'last_name')
 
-    # 비밀번호와 비밀번호 확인이 일치하는지 검증하는 로직
     def validate(self, data):
-        if data['password'] != data.pop('password_check'):
-            # 비밀번호가 다르면 ValidationError 발생
-            raise serializers.ValidationError({"password_check": "비밀번호가 일치하지 않습니다."})
+        if data['password'] != data['password2']:
+            raise serializers.ValidationError({'password': '비밀번호와 확인이 일치하지 않습니다.'})
+        password_validation.validate_password(data['password'], self.instance)
         return data
 
-    # 새 사용자 객체를 생성하고 저장하는 로직
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email', ''), 
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-        )
+        validated_data.pop('password2', None)
+        password = validated_data.pop('password', None)
+        user = User(**validated_data)
+        if password:
+            user.set_password(password)
+        user.save()
         return user
-    
-class UserChangeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        # 사용자가 API를 통해 수정 가능한 필드 목록을 지정합니다.
-        fields = ('username', 'email', 'first_name', 'last_name')
-        # 주의: username은 변경이 불가능하도록 설정하는 것이 일반적입니다.
-        read_only_fields = ('username',)
 
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is None:
+            raise serializers.ValidationError('아이디 또는 비밀번호가 틀렸습니다.')
+        data['user'] = user
+        return data
+
+
+class UserChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+        extra_kwargs = {'email': {'required': True}}
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        user = self.context['request'].user
+        if not user.check_password(data['old_password']):
+            raise serializers.ValidationError({'old_password': '현재 비밀번호가 올바르지 않습니다.'})
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({'new_password': '새 비밀번호와 확인 비밀번호가 일치하지 않습니다.'})
+        password_validation.validate_password(data['new_password'], user)
+        return data
+
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user
