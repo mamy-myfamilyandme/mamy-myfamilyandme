@@ -97,12 +97,13 @@ class DeleteUserAPIView(APIView):
 
 class UpdateUserAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
+    serializer_class = UserCreationSerializer
+    
     @swagger_auto_schema(
         request_body=UserChangeSerializer,
         operation_summary="회원 정보 수정",
         operation_description="사용자 정보를 수정합니다.",
-        responses={200: openapi.Response('회원정보 수정 성공')}
+        responses={200: UserChangeSerializer}
     )
     def put(self, request):
         return self.update_user(request)
@@ -111,7 +112,7 @@ class UpdateUserAPIView(APIView):
         request_body=UserChangeSerializer,
         operation_summary="회원 정보 부분 수정",
         operation_description="PATCH로 사용자 정보를 부분 수정합니다.",
-        responses={200: openapi.Response('회원정보 수정 성공')}
+        responses={200: UserChangeSerializer}  # 이 부분 수정
     )
     def patch(self, request):
         return self.update_user(request, partial=True)
@@ -122,9 +123,9 @@ class UpdateUserAPIView(APIView):
         serializer.save()
         return Response({'message': '회원정보가 성공적으로 수정되었습니다.', 'user': serializer.data})
 
-
 class PasswordChangeAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PasswordChangeSerializer
 
     @swagger_auto_schema(
         request_body=PasswordChangeSerializer,

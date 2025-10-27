@@ -43,8 +43,7 @@ class LoginSerializer(serializers.Serializer):
 class UserChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name')
-        extra_kwargs = {'email': {'required': True}}
+        fields = ['username', 'email', 'first_name', 'last_name']
 
 
 class PasswordChangeSerializer(serializers.Serializer):
