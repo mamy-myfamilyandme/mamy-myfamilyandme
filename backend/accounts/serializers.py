@@ -29,7 +29,7 @@ class UserCreationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField()  # username 대신 email로 로그인
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
@@ -39,11 +39,11 @@ class LoginSerializer(serializers.Serializer):
         data['user'] = user
         return data
 
-
 class UserChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name']
+        fields = ['username', 'email', 'first_name', 'last_name']  # username 변경 가능
+        read_only_fields = ['id', 'email']  # 이메일도 보통 변경 불가
 
 
 class PasswordChangeSerializer(serializers.Serializer):
