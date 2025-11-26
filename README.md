@@ -13,11 +13,11 @@
 ---
 
 ## 🗂️ 프로젝트 구조
-
 ```
 mamy-myfamilyandme/
 ├── backend/          # Django REST API
-├── frontend/         # React Native App
+├── frontend/
+│   └── MamyApp/     # React Native Expo App
 └── docs/            # 프로젝트 문서
 ```
 
@@ -39,13 +39,13 @@ uv run python manage.py runserver
 ```
 🌐 **접속:** http://localhost:8000
 
-### 3. 프론트엔드 실행 (React Native)
+### 3. 프론트엔드 실행 (React Native + Expo)
 ```bash
 cd frontend/MamyApp
 npm install
-npx react-native run-android    # Android
-# npx react-native run-ios      # iOS (macOS only)
+npx expo start
 ```
+📱 **실행:** Expo Go 앱에서 QR 코드 스캔
 
 ### 4. Pre-commit 설정 (처음 1번만)
 ```bash
@@ -65,10 +65,10 @@ uv run pre-commit install
 - **Ruff** (린팅/포맷팅)
 
 ### Frontend  
-- **React Native** + TypeScript
-- **Redux Toolkit** (상태 관리)
-- **React Navigation** (네비게이션)
-- **ESLint** (린팅)
+- **React Native (Expo)** + TypeScript
+- **상태 관리** TBD (Redux Toolkit / Zustand)
+- **React Navigation** (예정)
+- **ESLint + Prettier** (코드 품질)
 
 ### AI/ML
 - 미정
@@ -92,10 +92,21 @@ backend/
 ```
 frontend/MamyApp/
 ├── src/
-│   ├── screens/      # 화면 컴포넌트
 │   ├── components/   # 재사용 컴포넌트
-│   ├── services/     # API 통신
-│   └── types/        # TypeScript 타입
+│   │   ├── common/   # Button, Input 등
+│   │   └── layout/   # Header, Navigation Bar
+│   ├── screens/      # 화면 컴포넌트
+│   ├── navigation/   # 화면 전환 (예정)
+│   ├── services/     # API, OCR, 헬스킷
+│   │   ├── api/      # 백엔드 API 통신
+│   │   ├── ocr/      # OCR 처리
+│   │   └── health/   # iOS/Android 헬스킷
+│   ├── hooks/        # 커스텀 React Hook
+│   ├── types/        # TypeScript 타입
+│   ├── utils/        # 유틸리티 함수
+│   └── constants/    # 상수 (색상, API URL)
+├── assets/           # 이미지, 폰트
+├── App.tsx           # 앱 진입점
 └── package.json
 ```
 
@@ -106,18 +117,24 @@ frontend/MamyApp/
 ### 필수 도구 설치
 - **Python 3.11+**
 - **Node.js 18+**
+- **npm 9+**
 - **uv** (Python 패키지 관리)
-- **Android Studio** (Android 개발)
-- **Xcode** (iOS 개발, macOS only)
+- **Expo Go 앱** (iOS/Android 모바일 기기에 설치)
+
+### 선택 도구 (네이티브 빌드 시)
+- **Android Studio** (Android 네이티브 개발)
+- **Xcode** (iOS 네이티브 개발, macOS only)
 
 ### 환경변수 설정
-
 ```bash
 # backend/.env
 DEBUG=True
 SECRET_KEY=your-secret-key
 ALLOWED_HOSTS=localhost,127.0.0.1,192.168.1.100
 ```
+
+**참고:** Expo 사용 시 Android Studio/Xcode는 필수가 아닙니다. 
+실제 기기에서 Expo Go 앱으로 테스트 가능합니다.
 
 ---
 
@@ -183,26 +200,32 @@ git commit -m "feat: 예방접종 OCR API 구현"
 ```
 
 ---
-
 ### 3️⃣ Frontend 개발 후 커밋
-
 ```bash
 cd frontend/MamyApp
 
-# 1. 코드 작성 후 린팅 (선택)
-npm run lint           # 문제 확인
-npm run lint -- --fix  # 자동 수정
+# 1. 코드 작성 후 검사 (선택)
+npm run lint           # ESLint 검사
+npm run format         # Prettier 포맷팅
+npm run type-check     # TypeScript 타입 검사
 
-# 2. Git에 추가
-git add .
+# 2. Git에 추가 (루트 디렉토리에서)
+cd ../..
+git add frontend/MamyApp
 
 # 3. 커밋 (자동으로 pre-commit 실행됨!)
-git commit -m "feat: 접종 일정 화면 구현"
+git commit -m "feat: 접종 일정 화면 구임"
 ```
 
 **✨ 커밋 시 자동 실행:**
 - ⚛️ ESLint (자동 수정)
+- 🎨 Prettier (자동 포맷팅)
 - 📝 파일 끝 공백/줄바꿈 체크
+- 🔍 TypeScript 타입 검사
+
+**💡 팁:**
+- `npm run format` 먼저 실행하면 대부분의 린트 에러 해결
+- 타입 에러는 수동으로 수정 필요
 
 ---
 
@@ -257,38 +280,61 @@ git branch -d feature/기능명  # 로컬 브랜치 삭제
 ```
 
 ---
-
 ## 💡 커밋 메시지 규칙
 
 ### 기본 형식
 ```
-타입: 제목 (50자 이내)
+[KAN-XX] 타입: 제목 (50자 이내)
 
 본문 (선택, 72자마다 줄바꿈)
 ```
 
+또는
+```
+타입: [KAN-XX] 제목 (50자 이내)
+```
+
+**팀 규칙:** Jira 티켓 번호 포함 필수
+
 ### 타입 종류
 | 타입 | 설명 | 예시 |
 |------|------|------|
-| `feat` | 새 기능 | `feat: 접종 알림 기능 추가` |
-| `fix` | 버그 수정 | `fix: 날짜 계산 오류 수정` |
-| `docs` | 문서 수정 | `docs: API 문서 업데이트` |
-| `style` | 코드 포맷팅 | `style: import 순서 정리` |
-| `refactor` | 리팩토링 | `refactor: API 호출 로직 개선` |
-| `test` | 테스트 | `test: 접종 서비스 테스트 추가` |
-| `chore` | 빌드/설정 | `chore: 의존성 업데이트` |
+| `feat` | 새 기능 | `feat: [KAN-15] 접종 알림 기능 추가` |
+| `fix` | 버그 수정 | `fix: [KAN-20] 날짜 계산 오류 수정` |
+| `docs` | 문서 수정 | `docs: [KAN-15] API 문서 업데이트` |
+| `style` | 코드 포맷팅 | `style: [KAN-18] import 순서 정리` |
+| `refactor` | 리팩토링 | `refactor: [KAN-22] API 호출 로직 개선` |
+| `test` | 테스트 | `test: [KAN-19] 접종 서비스 테스트 추가` |
+| `chore` | 빌드/설정 | `chore: [KAN-15] 프로젝트 초기 설정` |
 
 ### 예시
-```bash
-# 좋은 예
-git commit -m "feat: 예방접종 OCR 기능 구현"
-git commit -m "fix: 아이 생년월일 유효성 검사 오류 수정"
-git commit -m "docs: README에 설치 가이드 추가"
 
-# 나쁜 예
-git commit -m "수정"
-git commit -m "작업중"
-git commit -m "asdfasdf"
+**좋은 예:**
+```bash
+git commit -m "feat: [KAN-15] 예방접종 OCR 기능 구현"
+git commit -m "fix: [KAN-20] 아이 생년월일 유효성 검사 오류 수정"
+git commit -m "docs: [KAN-15] README에 설치 가이드 추가"
+git commit -m "chore: [KAN-15] React Native Expo 프로젝트 초기 설정"
+
+# 티켓 번호를 앞에 쓰는 방식도 가능
+git commit -m "[KAN-15] chore: 프로젝트 초기 설정"
+```
+
+**나쁜 예:**
+```bash
+git commit -m "수정"                    # ❌ 티켓 번호 없음
+git commit -m "작업중"                  # ❌ 의미 불명확
+git commit -m "feat: OCR 추가"          # ❌ 티켓 번호 없음
+git commit -m "asdfasdf"                # ❌ 무의미
+```
+
+### 멀티라인 커밋 메시지
+```bash
+git commit -m "feat: [KAN-23] 복약 알림 기능 구현
+
+- 푸시 알림 권한 요청 추가
+- 알림 스케줄링 로직 구현
+- 사용자 설정 화면 연동"
 ```
 
 ---
